@@ -1,0 +1,22 @@
+{
+  "name": "2dv515-a3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "py -m flask run",
+    "test": "py app.py",
+    "serve": "npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nidawi/2DV515-A3.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nidawi/2DV515-A3/issues"
+  },
+  "homepage": "https://github.com/nidawi/2DV515-A3#readme"
+}
