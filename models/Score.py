@@ -7,7 +7,7 @@ from models.Page import Page
 CONTENT_MOD = 1
 LOCATION_MOD = 0.8
 PAGERANK_MOD = 0.5
-PRINT_DECIMAL_COUNT = 2
+OUTPUT_DECIMAL_COUNT = 2
 
 class Score:
   def __init__(self, page: Page):
@@ -45,8 +45,9 @@ class Score:
   def jsonify(self) -> dict:
     return {
       "name": self.get_page_name(),
-      "score": round(self.get_weighted_score(), 2),
-      "content": round(self.get_content_score(), 2),
-      "location": round(self.get_location_score(), 2),
-      "pagerank": round(self.get_pagerank_score(), 2)
+      "url": self.get_page_url(),
+      "score": round(self.get_weighted_score(), OUTPUT_DECIMAL_COUNT),
+      "content": round(self.get_content_score(), OUTPUT_DECIMAL_COUNT),
+      "location": round(self.get_location_score(), OUTPUT_DECIMAL_COUNT),
+      "pagerank": round(self.get_pagerank_score(), OUTPUT_DECIMAL_COUNT)
     }

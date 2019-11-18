@@ -62,3 +62,16 @@ class Page:
   # overwrite things
   def __len__(self) -> int:
     return len(self.__wordIds)
+
+  def __hash__(self):
+    return hash(self.__url)
+
+  def __repr__(self):
+    return "Page: %s (%d)" % (self.__url, len(self))
+
+  def __eq__(self, value):
+    if isinstance(value, Page):
+      return ((self.get_name() == value.get_name())
+      and (len(self) == len(value)))
+    else:
+      return False

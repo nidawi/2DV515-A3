@@ -1,23 +1,29 @@
 from models.Page import Page
+from models.Query import Query
 from models.Score import Score
 from models.Linker import Linker
 from lib.Metrics import Metrics
 from lib.utils import normalize_path
 from typing import List
-import io
 import os
 
-# This Indexer has far too many responsibilities.
+COUNT_ID = "count"
+
 class Indexer:
   def __init__(self, rootFolder: str, linkMgr: Linker):
     self.__root = rootFolder
     self.__linkMgr = linkMgr
-    self.__pages = []
+    self.__pages = set()
     self.__wordMap = {}
     self.__load_root()
     self.__metrics = Metrics(self.__pages)
 
-  def search_test(self, query: str):
+  def search(self, query: str, **opt) -> List[Score]:
+    """
+    Performs a recommendation-based search.
+    Returns an array of score objects, containing the
+    relevant pages and their associated scores.
+    """
     scores = []
     queryWords = self.__parse_query_string(query)
 
@@ -40,7 +46,16 @@ class Indexer:
     # sort list
     relevantScores.sort(key=lambda x : x.get_weighted_score(), reverse=True)
     
-    return relevantScores[0:5]
+    if COUNT_ID in opt:
+      return relevantScores[0:opt[COUNT_ID]]
+    else:
+      return relevantScores
+  
+  def query(self, query: str) -> Query:
+    newQuery = Query(query)
+    results = self.search(query)
+    newQuery._add_result(results)
+    return newQuery
 
   def __load_root(self) -> None:
     """Loads all files in the root folder."""
@@ -55,7 +70,7 @@ class Indexer:
           newPage.add_links(pageLinks)
 
         self.__read_file(filePath, newPage)
-        self.__pages.append(newPage)
+        self.__pages.add(newPage)
 
   def __read_file(self, path: str, page: Page) -> None:
     """Reads the given file and fills the provided page with the words contained."""
@@ -83,7 +98,7 @@ class Indexer:
     # could make this more complex later.
     queryWords = list(map(
       lambda x : self.__get_word_id_no_add(x),
-      query.strip().split()))
+      query.strip().lower().split()))
 
     return queryWords
 

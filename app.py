@@ -1,9 +1,13 @@
 from flask import Flask
-from flask_restful import Resource, Api
+from flask_restful import Resource, Api, abort
+from flask_cors import CORS
+from webargs.flaskparser import parser
 from models.Indexer import Indexer
 from models.Linker import Linker
 from timeit import default_timer as timer
-import os
+
+# routes
+from routes.Main import Main
 
 # This is my first time ever using python for anything more than
 # "Hello, World!". Do not expect miracles.
@@ -25,21 +29,15 @@ endTime = timer()
 print("Finished loading and calculating page ranks in %s seconds." % round((endTime - startTime), 2))
 
 # continue normal procedure when everything is loaded
-result = wordIndexer.search_test("java programming")
-
-for res in result:
-  print(res.jsonify())
-
-# wordIndexer.search("java")[0:5]
-# wordIndexer.search_test()
-
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
 
-class HelloWorld(Resource):
-  def get(self):
-    return { "Hello": "World" }
+api.add_resource(Main, "/api",
+endpoint = "api",
+resource_class_kwargs={"indexer": wordIndexer})
 
-# dd
-
-api.add_resource(HelloWorld, "/")
+# Add error handlers
+@parser.error_handler
+def handle_request_parsing_error(*args):
+  abort(400, message="Check query and try again.")
